@@ -8,9 +8,9 @@ from data_load import DataLoad
 
 class Pantry:
     def __init__(self):
-        self.__quantity = DataLoad()("pantry", "Coffee Types", "Quantity")
-        self.__depreciation = DataLoad()("pantry", "Coffee Types", "Depreciation")
-        self.__pantry_costs = DataLoad()("pantry", "Coffee Types", "Pantry costs")
+        self.__quantity = DataLoad()("pantry", "Ingredient", "Quantity(ml or g)")
+        self.__depreciation = DataLoad()("pantry", "Ingredient", "Depreciation(ratio/month)")
+        self.__pantry_costs = DataLoad()("pantry", "Ingredient", "Pantry costs(£/ml or £/g)")
 
     def get_quantity(self):
         return self.__quantity
