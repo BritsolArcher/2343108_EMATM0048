@@ -1,0 +1,7 @@
+Coffee Types,Milk(ml),Beans(g),Spices(g),Time to Prepare (in minutes)
+Expresso,0,8,0,3
+Americano,0,6,0,2
+Filter,0,4,0,1
+Macchiatto,100,8,2,4
+Flat White,200,8,1,5
+Latte,300,8,3,6
