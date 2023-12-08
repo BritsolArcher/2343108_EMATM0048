@@ -3,32 +3,28 @@
 # @Time    : 12/5/2023
 # @Author  : Yiming Qu
 
-import pandas as pd
+import csv
 
 
 class DataLoad:
     def __init__(self):
-        self.__tables = {
-            "demand": pd.read_excel("tables/demand.xlsx"),
-            "ingredients": pd.read_excel("tables/ingredients.xlsx"),
-            "pantry": pd.read_excel("tables/pantry.xlsx"),
-            "supplier": pd.read_excel("tables/supplier.xlsx")
+        self.__tables_path = {
+            "demand": "tables/demand.csv",
+            "ingredients": "tables/ingredients.csv",
+            "pantry": "tables/pantry.csv",
+            "supplier": "tables/supplier.csv"
         }
 
-    def read_excel_columns(self, table_name: str, *args):
-        column_names = [name for name in args]
-        data = self.__tables[table_name].loc[:, column_names]
+    def csv_to_dict(self, table_name: str, key_column, value_column):
+        data = {}
+        with open(self.__tables_path[table_name]) as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                data[row[key_column]] = row[value_column]
         return data
 
-    def excel_to_dict(self, table_name: str, key_column, value_column):
-        return self.read_excel_columns(table_name, key_column, value_column).\
-            set_index(key_column)[value_column].to_dict()
-
-    def __call__(self, table_name: str, key_column, value_column, is_structured=False):
-        if is_structured:
-            return self.read_excel_columns(table_name, key_column, value_column)
-        else:
-            return self.excel_to_dict(table_name, key_column, value_column)
+    def __call__(self, table_name: str, key_column, value_column):
+        return self.csv_to_dict(table_name, key_column, value_column)
 
 
 
