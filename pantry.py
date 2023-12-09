@@ -8,9 +8,12 @@ from data_load import DataLoad
 
 class Pantry:
     def __init__(self):
-        self.__quantity = DataLoad()("pantry", "Ingredient", "Quantity(ml or g)")
-        self.__depreciation = DataLoad()("pantry", "Ingredient", "Depreciation(ratio/month)")
-        self.__pantry_costs = DataLoad()("pantry", "Ingredient", "Pantry costs(£/ml or £/g)")
+        self.__quantity = DataLoad()("pantry", "Ingredient",
+                                     "Quantity(ml or g)")
+        self.__depreciation = DataLoad()("pantry", "Ingredient",
+                                         "Depreciation(ratio/month)")
+        self.__pantry_costs_rate = DataLoad()("pantry", "Ingredient",
+                                              "Pantry costs(pounds/ml or pounds/g)")
 
     def get_quantity(self):
         return self.__quantity
@@ -18,8 +21,8 @@ class Pantry:
     def get_depreciation(self):
         return self.__depreciation
 
-    def get_pantry_costs(self):
-        return self.__pantry_costs
+    def get_pantry_costs_rate(self):
+        return self.__pantry_costs_rate
 
     def update_quantity(self):
         pass
