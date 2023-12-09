@@ -1,4 +1,4 @@
-Ingredient,Quantity(ml or g),Depreciation(ratio/month),Pantry costs(£/ml or £/g)
+Ingredient,Quantity(ml or g),Depreciation(ratio/month),Pantry costs(pounds/ml or pounds/g)
 Milk,300000,0.4,0.0001
 Beans,20000,0.1,0.0010
 Spices,4000,0.0,0.0010
