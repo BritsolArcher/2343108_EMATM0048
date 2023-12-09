@@ -1,7 +1,7 @@
-Coffee Types,Monthly Demand
-Expresso,500
-Americano,200
-Filter,300
-Macchiatto,400
-Flat White,600
-Latte,1000
+Coffee Types,Monthly Demand,Sell Price(pounds)
+Expresso,500,1.5
+Americano,200,2.5
+Filter,300,1.5
+Macchiatto,400,3.0
+Flat White,600,3.5
+Latte,1000,4.0
