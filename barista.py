@@ -16,12 +16,8 @@ class Barista:
         self.__coffe_produce_rate = DataLoad()("ingredients", "Coffee Types",
                                                "Time to Prepare (in minutes)")
 
-        print(f"Barista {self.__name} has been employed. ")
         if is_special:
             self.__coffe_produce_rate[self.__speciality] *= 0.5
-            print(f"{self.__name} specialises in {self.__speciality}")
-        else:
-            print(f"{self.__name} doesn't have a speciality")
 
     def get_name(self):
         return self.__name
