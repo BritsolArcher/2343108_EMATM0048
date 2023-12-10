@@ -13,6 +13,8 @@ class CashStatus:
         self.__supplies_costs = 0
         self.__employee_costs = 0
 
+        self.__income = 0
+
     def get_cash_amount(self):
         return self.__cash_amount
 
@@ -26,5 +28,5 @@ class CashStatus:
         pass
 
     def update_cash_amount(self):
-        pass
-    
+        self.__cash_amount += (self.__income - self.__rent_costs - self.__pantry_costs
+                               - self.__supplies_costs - self.__employee_costs)
