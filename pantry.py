@@ -8,6 +8,9 @@ from data_load import DataLoad
 
 class Pantry:
     def __init__(self):
+        self.__full_quantity = DataLoad()("pantry", "Ingredient",  # can't be modified
+                                          "Quantity(ml or g)")
+
         self.__quantity = DataLoad()("pantry", "Ingredient",
                                      "Quantity(ml or g)")
         self.__depreciation = DataLoad()("pantry", "Ingredient",
@@ -17,6 +20,12 @@ class Pantry:
 
     def get_quantity(self):
         return self.__quantity
+
+    def is_full(self):
+        for ingredient in self.__full_quantity.keys():
+            if self.__quantity[ingredient] < self.__full_quantity[ingredient]:
+                return False
+        return True
 
     def get_depreciation(self):
         return self.__depreciation
