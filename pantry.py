@@ -4,6 +4,7 @@
 # @Author  : Yiming Qu
 
 from data_load import DataLoad
+import math
 
 
 class Pantry:
@@ -33,5 +34,15 @@ class Pantry:
     def get_pantry_costs_rate(self):
         return self.__pantry_costs_rate
 
-    def update_quantity(self):
-        pass
+    def consumed_quantity(self, consumption: dict):  # update quantity after consumption
+        for ingredient in self.__quantity.keys():
+            self.__quantity[ingredient] -= consumption[ingredient]
+
+    def depreciated_quantity(self):  # update quantity after depreciation
+        for ingredient in self.__quantity.keys():
+            depreciation = math.ceil(self.__quantity[ingredient] * self.__depreciation[ingredient])
+            self.__quantity[ingredient] -= depreciation
+
+    def pantry_quantity_reset(self):
+        self.__quantity = self.__full_quantity
+
