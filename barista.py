@@ -28,7 +28,7 @@ class Barista:
     def get_salary(self):
         return self.__paid_rate * self.__paid_hour
 
-    def labour_time_remain(self, **coffee_amount):
+    def update_labour_time(self, **coffee_amount):
         for coffee in self.__coffe_produce_rate.keys():
             self.__labour_time -= coffee_amount[coffee] * self.__coffe_produce_rate[coffee]
 
