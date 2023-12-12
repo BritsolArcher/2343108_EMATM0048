@@ -3,10 +3,16 @@
 # @Time    : 12/9/2023
 # @Author  : Yiming Qu
 
+from data_load import DataLoad
+
 
 class CashStatus:
     def __init__(self):
         self.__cash_amount = 10000
+
+        self.__income = 0
+        self.__coffee_price = DataLoad()("demand", "Coffee Types",
+                                         "Price(pounds)")
 
         self.__rent_costs = 1500
 
@@ -14,10 +20,12 @@ class CashStatus:
         self.__supplies_costs = 0
         self.__employee_costs = 0
 
-        self.__income = 0
-
     def get_cash_amount(self):
         return self.__cash_amount
+
+    def update_income(self, **coffee_amount):
+        for coffee in self.__coffee_price.keys():
+            self.__income += coffee_amount[coffee] * coffee_amount[coffee]
 
     def update_pantry_costs(self, pantry_quantity: dict, pantry_costs_rate: dict):
         pantry_costs = {}
@@ -41,8 +49,8 @@ class CashStatus:
                                - self.__supplies_costs - self.__employee_costs)
 
     def profit_reset(self):
+        self.__income = 0
+
         self.__pantry_costs = 0
         self.__supplies_costs = 0
         self.__employee_costs = 0
-
-        self.__income = 0
