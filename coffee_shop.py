@@ -10,7 +10,8 @@ from data_load import DataLoad
 
 
 class CoffeeShop:
-    def __init__(self):
+    def __init__(self, name):
+        self.__name = name
         self.__baristas = {}
         self.__specialists = {  # Barista who has a speciality will be added
             "Expresso": set(),  # Specialities are keys, while baristas' names are values
@@ -20,6 +21,7 @@ class CoffeeShop:
             "Flat White": set(),
             "Latte": set()
         }
+
         self.__pantry = Pantry()
         self.__cash_status = CashStatus()
 
@@ -59,9 +61,10 @@ class CoffeeShop:
                     print(f"{name} specialises in {speciality}")
                 else:
                     print(f"{name} doesn't have a speciality")
+            return True
 
         else:
-            pass
+            return False
 
     def remove_baristas(self, *names):
         for name in names:
@@ -69,3 +72,33 @@ class CoffeeShop:
 
     def baristas_number(self):
         return len(self.__baristas)
+
+    def update_demand(self, **demand):
+        origin_demand = self.__demand
+
+        for coffee in demand.keys():
+            if demand[coffee] <= self.__max_demand[coffee]:
+                self.__demand[coffee] = demand[coffee]
+            else:
+                self.__demand = origin_demand
+                return False
+
+    def update_ingredients_consumption(self):
+        pass
+
+    def demand_reset(self):
+        self.__demand = self.__ingredients_consumption_rate = {
+            "Expresso": 0,
+            "Americano": 0,
+            "Filter": 0,
+            "Macchiatto": 0,
+            "Flat White": 0,
+            "Latte": 0
+        }
+
+    def ingredients_consumption_reset(self):
+        self.__ingredients_consumption = {
+            "Milk": 0,
+            "Beans": 0,
+            "Spices": 0
+        }
