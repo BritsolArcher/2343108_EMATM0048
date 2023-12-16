@@ -46,7 +46,7 @@ class BaristaTeam:
         self.__coffe_produce_rate = DataLoad()("ingredients", "Coffee Types",
                                                "Time to Prepare (in minutes)")
 
-    def add_baristas(self, numbers: int, names: list,  specialities: list):
+    def add_baristas(self, numbers: int, names: list, specialities: list):
         if numbers + self.baristas_number() <= 4:
             for name, speciality in zip(names, specialities):
                 is_special = speciality in self.__specialists.keys()
@@ -74,13 +74,13 @@ class BaristaTeam:
     def reset_total_labour_time(self):
         self.__total_labour_time = self.baristas_number() * 80 * 60
 
-    def update_total_labour_time(self, **demand):
+    def update_total_labour_time(self, demand: dict):
         current_specialists_number = {}
         for coffee, names in self.__specialists.items():
             if len(names) > 0:
                 current_specialists_number[coffee] = len(names)
 
-        if len(current_specialists_number) == 0:
+        if len(current_specialists_number) == 0:  # If there is not any specialists
             for coffee in demand.keys():
                 time_consumption = demand[coffee] * self.__coffe_produce_rate[coffee]
                 self.__total_labour_time -= time_consumption
@@ -96,12 +96,15 @@ class BaristaTeam:
                     demand[coffee] = 0  # Update demand
                 else:
                     self.__total_labour_time -= specialists_labour_time
-                    demand[coffee] -= specialists_labour_time/(self.__coffe_produce_rate[coffee] * 0.5)  # Update demand
+                    demand[coffee] -= int(specialists_labour_time /
+                                          (self.__coffe_produce_rate[coffee] * 0.5))  # Update demand
 
             for coffee in demand.keys():
                 time_consumption = demand[coffee] * self.__coffe_produce_rate[coffee]
                 self.__total_labour_time -= time_consumption
 
-
-
-
+        if self.__total_labour_time > 0:
+            return True
+        else:
+            self.reset_total_labour_time()
+            return False

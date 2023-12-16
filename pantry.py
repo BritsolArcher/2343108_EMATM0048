@@ -34,11 +34,17 @@ class Pantry:
     def get_pantry_costs_rate(self):
         return self.__pantry_costs_rate
 
-    def consumed_quantity(self, consumption: dict):  # update quantity after consumption
-        for ingredient in self.__quantity.keys():
-            self.__quantity[ingredient] -= consumption[ingredient]
+    def consume_and_update_quantity(self, consumption: dict):  # Update quantity after consumption
+        quantity = self.__quantity
+        for ingredient in quantity.keys():
+            quantity[ingredient] -= consumption[ingredient]
+            if quantity[ingredient] < 0:  # Check whether ingredients are insufficient
+                return False
 
-    def depreciated_quantity(self):  # update quantity after depreciation
+        self.__quantity = quantity  # Update ingredient if ingredients are sufficient
+        return True
+
+    def depreciate_and_update_quantity(self):  # update quantity after depreciation
         for ingredient in self.__quantity.keys():
             depreciation = math.ceil(self.__quantity[ingredient] * self.__depreciation[ingredient])
             self.__quantity[ingredient] -= depreciation
