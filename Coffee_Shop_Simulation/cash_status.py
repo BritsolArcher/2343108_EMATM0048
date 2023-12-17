@@ -14,9 +14,9 @@ class CashStatus:
         self.__coffee_price = DataLoad()("demand", "Coffee Types",
                                          "Price(pounds)")
         self.__supplies_price = {
-            "Milk": 0.40,
-            "Beans": 0.50,
-            "Spices": 0.30
+            "Milk": 0.0003,
+            "Beans": 0.10,
+            "Spices": 0.05
         }
 
         self.__rent_costs = 1500
