@@ -33,7 +33,7 @@ class Barista:
 
 class BaristaTeam:
     def __init__(self):
-        self.__baristas: Dict[str, Barista] = {}
+        self.__baristas: Dict[str, Barista] = {}  # Key: name; Value: Barista
         self.__specialists = {  # Barista who has a speciality will be added
             "Expresso": set(),  # Specialities are keys, while baristas names are values
             "Americano": set(),
@@ -45,6 +45,9 @@ class BaristaTeam:
         self.__total_labour_time = 0
         self.__coffe_produce_rate = DataLoad()("ingredients", "Coffee Types",
                                                "Time to Prepare (in minutes)")
+
+    def get_baristas_names(self):
+        return self.__baristas.keys()
 
     def add_baristas(self, numbers: int, names: list, specialities: list):
         if numbers + self.baristas_number() <= 4:
@@ -65,7 +68,8 @@ class BaristaTeam:
     def remove_baristas(self, *names):
         for name in names:
             if self.__baristas[name].is_special():
-                del self.__specialists[name]
+                speciality = self.__baristas[name].get_speciality()
+                self.__specialists[speciality].discard(name)
             del self.__baristas[name]
 
     def baristas_number(self):

@@ -13,6 +13,11 @@ class CashStatus:
         self.__income = 0
         self.__coffee_price = DataLoad()("demand", "Coffee Types",
                                          "Price(pounds)")
+        self.__supplies_price = {
+            "Milk": 0.40,
+            "Beans": 0.50,
+            "Spices": 0.30
+        }
 
         self.__rent_costs = 1500
 
@@ -23,9 +28,12 @@ class CashStatus:
     def get_cash_amount(self):
         return self.__cash_amount
 
-    def update_income(self, **coffee_amount):
+    def update_income(self, demand: dict):
+        income = {}
         for coffee in self.__coffee_price.keys():
-            self.__income += coffee_amount[coffee] * coffee_amount[coffee]
+            income[coffee] = demand[coffee] * self.__coffee_price[coffee]
+            self.__income += income[coffee]
+        return income
 
     def update_pantry_costs(self, pantry_quantity: dict, pantry_costs_rate: dict):
         pantry_costs = {}
@@ -35,14 +43,18 @@ class CashStatus:
 
         return pantry_costs
 
-    def update_supplies_costs(self, pantry_shortage: dict, supplies_price: dict):
+    def update_supplies_costs(self, pantry_shortage: dict):
+        supplies_costs = {}
         for ingredient in pantry_shortage.keys():
-            self.__supplies_costs += pantry_shortage[ingredient] * supplies_price[ingredient]
+            supplies_costs[ingredient] = pantry_shortage[ingredient] * self.__supplies_price[ingredient]
+            self.__supplies_costs += supplies_costs[ingredient]
+        return supplies_costs
 
-    def update_employee_costs(self, numbers: int):
+    def update_employee_costs(self, number: int):
         paid_rate = 15
         paid_hour = 120
-        self.__employee_costs = numbers * paid_rate * paid_hour
+        self.__employee_costs = number * paid_rate * paid_hour
+        return self.__employee_costs
 
     def update_cash_amount(self):
         self.__cash_amount += (self.__income - self.__rent_costs - self.__pantry_costs

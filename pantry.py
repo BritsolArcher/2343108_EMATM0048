@@ -49,6 +49,12 @@ class Pantry:
             depreciation = math.ceil(self.__quantity[ingredient] * self.__depreciation[ingredient])
             self.__quantity[ingredient] -= depreciation
 
+    def get_shortage(self):
+        shortage = {}
+        for ingredient in self.__quantity.keys():
+            shortage[ingredient] = self.__full_quantity[ingredient] - self.__quantity[ingredient]
+        return shortage
+
     def pantry_quantity_reset(self):
         self.__quantity = self.__full_quantity
 
