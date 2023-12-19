@@ -75,40 +75,46 @@ class BaristaTeam:
     def baristas_number(self):
         return len(self.__baristas)
 
+    def get_specialists(self):
+        return self.__specialists
+
     def reset_total_labour_time(self):
         self.__total_labour_time = self.baristas_number() * 80 * 60
 
-    def update_total_labour_time(self, demand: dict):
-        current_specialists_number = {}
-        for coffee, names in self.__specialists.items():
-            if len(names) > 0:
-                current_specialists_number[coffee] = len(names)
+    def get_total_labour_time(self):
+        return self.__total_labour_time
 
-        if len(current_specialists_number) == 0:  # If there is not any specialists
-            for coffee in demand.keys():
-                time_consumption = demand[coffee] * self.__coffe_produce_rate[coffee]
-                self.__total_labour_time -= time_consumption
-        else:
-            for coffee in current_specialists_number.keys():
-                # Specialists can make the specialised coffee in 1/2 the time
-                time_consumption = 0.5 * demand[coffee] * self.__coffe_produce_rate[coffee]
-                specialists_labour_time = current_specialists_number[coffee] * 80 * 60
-
-                # Check whether specialists' labour_time is ran out
-                if time_consumption <= specialists_labour_time:
-                    self.__total_labour_time -= time_consumption
-                    demand[coffee] = 0  # Update demand
-                else:
-                    self.__total_labour_time -= specialists_labour_time
-                    demand[coffee] -= int(specialists_labour_time /
-                                          (self.__coffe_produce_rate[coffee] * 0.5))  # Update demand
-
-            for coffee in demand.keys():
-                time_consumption = demand[coffee] * self.__coffe_produce_rate[coffee]
-                self.__total_labour_time -= time_consumption
-
-        if self.__total_labour_time > 0:
-            return True
-        else:
-            self.reset_total_labour_time()
-            return False
+    # def update_total_labour_time(self, demand: dict):
+    #     current_specialists_number = {}
+    #     for coffee, names in self.__specialists.items():
+    #         if len(names) > 0:
+    #             current_specialists_number[coffee] = len(names)
+    #
+    #     if len(current_specialists_number) == 0:  # If there is not any specialists
+    #         for coffee in demand.keys():
+    #             time_consumption = demand[coffee] * self.__coffe_produce_rate[coffee]
+    #             self.__total_labour_time -= time_consumption
+    #     else:
+    #         for coffee in current_specialists_number.keys():
+    #             # Specialists can make the specialised coffee in 1/2 the time
+    #             time_consumption = 0.5 * demand[coffee] * self.__coffe_produce_rate[coffee]
+    #             specialists_labour_time = current_specialists_number[coffee] * 80 * 60
+    #
+    #             # Check whether specialists' labour_time is ran out
+    #             if time_consumption <= specialists_labour_time:
+    #                 self.__total_labour_time -= time_consumption
+    #                 demand[coffee] = 0  # Update demand
+    #             else:
+    #                 self.__total_labour_time -= specialists_labour_time
+    #                 demand[coffee] -= int(specialists_labour_time /
+    #                                       (self.__coffe_produce_rate[coffee] * 0.5))  # Update demand
+    #
+    #         for coffee in demand.keys():
+    #             time_consumption = demand[coffee] * self.__coffe_produce_rate[coffee]
+    #             self.__total_labour_time -= time_consumption
+    #
+    #     if self.__total_labour_time > 0:
+    #         return True
+    #     else:
+    #         self.reset_total_labour_time()
+    #         return False
