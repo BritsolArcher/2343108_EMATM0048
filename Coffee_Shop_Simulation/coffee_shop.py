@@ -78,75 +78,88 @@ class CoffeeShop:
     #             self.__ingredients_consumption = ingredients_consumption
     #             total_labour_time -= time_consumption
     #             return ingredients_consumption, total_labour_time
+    def reset_demand(self, demand: dict, coffee_type: str, reset_value: int):
+        ingredients_consumption = self.__ingredients_consumption
+        demand[coffee_type] = reset_value
+        ingredients_consumption = self.update_ingredients_consumption(demand, coffee_type, ingredients_consumption)
+        return ingredients_consumption
+
+    def update_ingredients_consumption(self, demand: dict, coffee_type: str, ingredients_consumption: dict):
+        for ingredient in self.__ingredients_consumption_rate[coffee_type].keys():
+            # Calculate the total ingredients consumption
+            ingredients_consumption[ingredient] += (
+                    demand[coffee_type] * self.__ingredients_consumption_rate[coffee_type][ingredient])
+        return ingredients_consumption
 
     def is_demand_exceed(self, demand: dict):
         current_specialists_number = {}  # Count the number of specialists
-        specialists = self.__barista_team.get_specialists()  # Get the name of specialists
-        total_labour_time = self.__barista_team.get_total_labour_time()  # Get the total labour time of barista team
-        ingredients_consumption = {  # Calculate the ingredients consumption
+        specialists_time_consumption = {}
+
+        specialists = self.__barista_team.get_specialists()
+        total_labour_time = self.__barista_team.get_total_labour_time()
+        ingredients_consumption = {  # Record the ingredients consumption
             "Milk": 0,
             "Beans": 0,
             "Spices": 0
         }
-
         for coffee, names in specialists.items():  # Count the number of specialists
             if len(names) > 0:
                 current_specialists_number[coffee] = len(names)
 
-        if len(current_specialists_number) == 0:  # If there is not any specialists
-            for coffee in demand.keys():
-                # Calculate baristas labour time consumption in one type of coffee
-                time_consumption = demand[coffee] * self.__coffe_produce_rate[coffee]
-                if total_labour_time - time_consumption < 0:  # Check whether the labour constraints is exceeded
-                    pass
-                else:
-                    for ingredient in self.__ingredients_consumption_rate[coffee].keys():
-                        # Calculate the total ingredients consumption
-                        ingredients_consumption[ingredient] += (
-                                demand[coffee] * self.__ingredients_consumption_rate[coffee][ingredient])
-                    if self.__pantry.is_ingredients_demand_exceed(ingredients_consumption):
-                        ingredients_consumption = self.__ingredients_consumption
-                        '''pass'''
-                    else:  # Update ingredients consumption, total_labour_time
-                        self.__ingredients_consumption = ingredients_consumption
-                        total_labour_time -= time_consumption
-        else:
-            specialists_time_consumption = {}
-            for coffee in current_specialists_number.keys():  # Demand for special coffee type is firstly met
-                # Specialists can make the specialised coffee in 1/2 the time
-                time_consumption = 0.5 * demand[coffee] * self.__coffe_produce_rate[coffee]
-                # Calculate ONE TYPE of specialists labour time
-                specialists_labour_time = current_specialists_number[coffee] * 80 * 60
+        # Provide coffee of specialised type first
+        if len(current_specialists_number) > 0:
+            for coffee in current_specialists_number.keys():
+                ingredients_consumption = self.update_ingredients_consumption(demand, coffee, ingredients_consumption)
 
-                # Check whether specialists' labour_time is ran out
+                # Check whether ingredients demand is exceeded
+                while self.__pantry.is_ingredients_demand_exceed(ingredients_consumption):
+                    ingredients_consumption = self.reset_demand(demand, coffee, reset_value=-1)
+
+                # Record the specialists labour time
+                specialists_labour_time = current_specialists_number[coffee] * 80 * 60
+                # Specialists can make coffee in half a time
+                time_consumption = 0.5 * demand[coffee] * self.__coffe_produce_rate[coffee]
+
+                # Check whether specialists labour exceeds constrain
                 if time_consumption <= specialists_labour_time:
                     total_labour_time -= time_consumption
-                    demand[coffee] = 0  # Set demand to 0
+                    self.__ingredients_consumption = ingredients_consumption
                 else:
-                    # Record ONE TYPE of specialists labour time if it is RAN OUT
                     specialists_time_consumption[coffee] = specialists_labour_time
-                    total_labour_time -= specialists_labour_time  # Only update total_labour_time
-                    # demand[coffee] -= int(specialists_labour_time /
-                    #                       (self.__coffe_produce_rate[coffee] * 0.5))  # Update demand
 
-            if len(specialists_time_consumption) > 0:  # Need to be modified
+            if len(specialists_time_consumption) > 0:
                 for coffee in specialists_time_consumption.keys():
-                    # Calculate baristas labour time consumption in one type of coffee
-                    time_consumption = demand[coffee] * self.__coffe_produce_rate[coffee]
-                    if total_labour_time - time_consumption < 0:  # Check whether the labour constraints is exceeded
-                        pass
-                    else:
-                        for ingredient in self.__ingredients_consumption_rate[coffee].keys():
-                            # Calculate the total ingredients consumption
-                            ingredients_consumption[ingredient] += (
-                                    demand[coffee] * self.__ingredients_consumption_rate[coffee][ingredient])
-                        if self.__pantry.is_ingredients_demand_exceed(ingredients_consumption):
-                            ingredients_consumption = self.__ingredients_consumption
-                            '''Reset demand to a valid value'''
-                        else:  # Update ingredients consumption, total_labour_time
-                            self.__ingredients_consumption = ingredients_consumption
-                            total_labour_time -= time_consumption
+                    coffee_finished = specialists_time_consumption[coffee]/(self.__coffe_produce_rate[coffee]*0.5)
+                    coffee_remain = demand[coffee] - int(coffee_finished)
+                    time_consumption = coffee_remain * self.__coffe_produce_rate[coffee]
 
+                    while total_labour_time - time_consumption - specialists_time_consumption[coffee] < 0:
+                        demand[coffee] = -1  # reset
+                        if demand[coffee] <= coffee_finished:
+                            time_consumption = 0.5 * demand[coffee] * self.__coffe_produce_rate[coffee]
+                            total_labour_time -= time_consumption
+                            self.__ingredients_consumption = (
+                                self.update_ingredients_consumption(demand, coffee, ingredients_consumption))
+                            break
+                        else:
+                            coffee_remain = demand[coffee] - int(coffee_finished)
+                            time_consumption = coffee_remain * self.__coffe_produce_rate[coffee]
+
+                    total_labour_time -= (time_consumption + specialists_time_consumption[coffee])
+                    self.__ingredients_consumption = ingredients_consumption
+
+        for coffee in demand.keys():
+            if coffee not in specialists_time_consumption.keys():
+                ingredients_consumption = self.update_ingredients_consumption(demand, coffee, ingredients_consumption)
+                while self.__pantry.is_ingredients_demand_exceed(ingredients_consumption):
+                    ingredients_consumption = self.reset_demand(demand, coffee, reset_value=-1)
+
+                time_consumption = demand[coffee] * self.__coffe_produce_rate[coffee]
+                while total_labour_time - time_consumption < 0:
+                    ingredients_consumption = self.reset_demand(demand, coffee, reset_value=-1)
+
+                total_labour_time -= time_consumption
+                self.__ingredients_consumption = ingredients_consumption
 
     def get_pantry_ingredients(self):
         return self.__pantry.get_quantity()
