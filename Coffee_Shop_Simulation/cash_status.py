@@ -23,7 +23,7 @@ class CashStatus:
 
         self.__pantry_costs = 0
         self.__supplies_costs = 0
-        self.__employee_costs = 0
+        self.__baristas_costs = 0
 
     def get_cash_amount(self):
         return self.__cash_amount
@@ -50,19 +50,19 @@ class CashStatus:
             self.__supplies_costs += supplies_costs[ingredient]
         return supplies_costs
 
-    def update_employee_costs(self, number: int):
+    def update_baristas_costs(self, number: int):
         paid_rate = 15
         paid_hour = 120
-        self.__employee_costs = number * paid_rate * paid_hour
-        return self.__employee_costs
+        self.__baristas_costs = number * paid_rate * paid_hour
+        return self.__baristas_costs
 
     def update_cash_amount(self):
         self.__cash_amount += (self.__income - self.__rent_costs - self.__pantry_costs
-                               - self.__supplies_costs - self.__employee_costs)
+                               - self.__supplies_costs - self.__baristas_costs)
 
     def profit_reset(self):
         self.__income = 0
 
         self.__pantry_costs = 0
         self.__supplies_costs = 0
-        self.__employee_costs = 0
+        self.__baristas_costs = 0

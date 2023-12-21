@@ -3,14 +3,37 @@
 # @Time    : 12/8/2023
 # @Author  : Yiming Qu
 
-from barista import Barista, BaristaTeam
+from barista import BaristaTeam
 from pantry import Pantry
 from cash_status import CashStatus
 from data_load import DataLoad
 
 
 class CoffeeShop:
+    """
+    A class representing a coffee shop.
+
+    Overview:
+        This class models the functionality of a coffee shop,
+        including managing baristas, tracking cash and pantry status.
+
+    Attributes:
+        __name: A string variable recoding the name of the coffee shop.
+        __barista_team: A class representing baristas
+        __pantry: A class representing the pantry of the coffee shop
+        __cash_status: A class representing the cash status of the coffee shop
+        __max_demand: A dictionary with coffee types as keys and their corresponding maximum demand as values.
+        __ingredients_consumption_rate: A nested dictionary recording ingredients consumption rate
+        __coffe_produce_rate: A dictionary with coffee types as keys and their corresponding production time as values.
+        __ingredients_consumption: A dictionary recording the ingredients consumption
+    """
     def __init__(self, name):
+        """
+        Initializes the instance based on spam preference.
+
+        Args:
+          name: Defines the name of a coffee shop.
+        """
         self.__name = name
 
         self.__barista_team = BaristaTeam()
@@ -38,75 +61,108 @@ class CoffeeShop:
             "Spices": 0
         }
 
-    def is_barista_name_exist(self, name):
-        if name in self.__barista_team.get_baristas_names():
-            return True
-        else:
-            return False
+    def add_baristas(self, number: int, baristas: dict):
+        """
+        Add new baristas in barista team.
 
-    def add_baristas(self, numbers: int, names: list, specialities: list):
-        self.__barista_team.add_baristas(numbers, names, specialities)
+        Args:
+          number: The number of new baristas.
+          baristas : The baristas <name, speciality> need to add
+        """
+        self.__barista_team.add_baristas(number, baristas)
 
     def remove_baristas(self, *names):
+        """
+        Dismiss baristas in barista team.
+
+        Args:
+          names: The name of baristas to dismiss.
+        """
         self.__barista_team.remove_baristas(names)
 
     def barista_team_number(self):
+        """
+        Get the number of baristas.
+
+        Returns:
+          An integer representing the number of baristas.
+        """
         return self.__barista_team.baristas_number()
 
     def reset_baristas_labour_time(self):
+        """
+        Reset baristas labour.
+        """
         self.__barista_team.reset_total_labour_time()
 
-    def is_demand_exceed_max_demand(self, demand: dict):
-        for coffee in demand.keys():
-            if demand[coffee] > self.__max_demand[coffee]:
-                return False
+    def is_demand_exceed_max_demand(self, coffee_type: str, demand: dict):
+        """
+        Check if the demand exceeds the maximum demand.
+
+        Args:
+          coffee_type: The coffee type
+          demand: The coffee demand.
+
+        returns:
+          A boolean indicating if the demand exceeds the maximum demand.
+        """
+
+        if demand[coffee_type] > self.__max_demand[coffee_type]:
+            return False
         return True
 
-    # def update_consumption(self, coffee: str, demand: dict, total_labour_time, ingredients_consumption):
-    #     time_consumption = demand[coffee] * self.__coffe_produce_rate[coffee]
-    #     if total_labour_time - time_consumption < 0:  # Check whether the labour constraints is exceeded
-    #         pass
-    #     else:
-    #         for ingredient in self.__ingredients_consumption_rate[coffee].keys():
-    #             # Calculate the total ingredients consumption
-    #             ingredients_consumption[ingredient] += (
-    #                     demand[coffee] * self.__ingredients_consumption_rate[coffee][ingredient])
-    #         if self.__pantry.is_ingredients_demand_exceed(ingredients_consumption):
-    #             ingredients_consumption = self.__ingredients_consumption
-    #             '''pass'''
-    #         else:  # Update ingredients consumption, total_labour_time
-    #             self.__ingredients_consumption = ingredients_consumption
-    #             total_labour_time -= time_consumption
-    #             return ingredients_consumption, total_labour_time
     def reset_demand(self, demand: dict, coffee_type: str, reset_value: int):
+        """
+        Check if the demand exceeds the maximum demand.
+
+        Args:
+          coffee_type: The coffee type
+          demand: The coffee demand.
+
+        Returns:
+          A dictionary recording the previous ingredients consumption
+        """
         ingredients_consumption = self.__ingredients_consumption
         demand[coffee_type] = reset_value
         ingredients_consumption = self.update_ingredients_consumption(demand, coffee_type, ingredients_consumption)
         return ingredients_consumption
 
     def update_ingredients_consumption(self, demand: dict, coffee_type: str, ingredients_consumption: dict):
+        """
+        Update ingredients consumption based on the demand.
+
+        Args:
+          demand: The coffee demand.
+          coffee_type: The coffee type
+          ingredients_consumption: The ingredients consumption need to update
+
+        Returns:
+          A dictionary recording the updated ingredients' consumption.
+        """
         for ingredient in self.__ingredients_consumption_rate[coffee_type].keys():
             # Calculate the total ingredients consumption
             ingredients_consumption[ingredient] += (
                     demand[coffee_type] * self.__ingredients_consumption_rate[coffee_type][ingredient])
         return ingredients_consumption
 
-    def is_demand_exceed(self, demand: dict):
-        current_specialists_number = {}  # Count the number of specialists
+    def update_demand(self, demand: dict):
+        current_specialists_number = {}  # A dictionary recording the specialists number in each coffee type
         specialists_time_consumption = {}
 
         specialists = self.__barista_team.get_specialists()
         total_labour_time = self.__barista_team.get_total_labour_time()
-        ingredients_consumption = {  # Record the ingredients consumption
+        # Record the ingredients consumption
+        ingredients_consumption = {
             "Milk": 0,
             "Beans": 0,
             "Spices": 0
         }
-        for coffee, names in specialists.items():  # Count the number of specialists
+        # Count the number of specialists
+        for coffee, names in specialists.items():
             if len(names) > 0:
                 current_specialists_number[coffee] = len(names)
 
-        # Provide coffee of specialised type first
+        # Provide coffee in specialised type first
         if len(current_specialists_number) > 0:
             for coffee in current_specialists_number.keys():
                 ingredients_consumption = self.update_ingredients_consumption(demand, coffee, ingredients_consumption)
@@ -149,7 +205,7 @@ class CoffeeShop:
                     self.__ingredients_consumption = ingredients_consumption
 
         for coffee in demand.keys():
-            if coffee not in specialists_time_consumption.keys():
+            if coffee not in current_specialists_number.keys():
                 ingredients_consumption = self.update_ingredients_consumption(demand, coffee, ingredients_consumption)
                 while self.__pantry.is_ingredients_demand_exceed(ingredients_consumption):
                     ingredients_consumption = self.reset_demand(demand, coffee, reset_value=-1)
@@ -161,29 +217,76 @@ class CoffeeShop:
                 total_labour_time -= time_consumption
                 self.__ingredients_consumption = ingredients_consumption
 
+        return demand
+
     def get_pantry_ingredients(self):
+        """
+        Get the quantity of ingredients.
+
+        Returns:
+          A dictionary recording the quantity of ingredients.
+        """
         return self.__pantry.get_quantity()
 
     def get_cash_amount(self):
+        """
+        Get the cash amount.
+
+        Returns:
+          An integer representing the cash amount.
+        """
         return self.__cash_status.get_cash_amount()
 
     def get_income(self, demand: dict):
+        """
+        Update and get the income (not the pure profit) from coffee sales.
+
+        Returns:
+          An integer representing the income from coffee sales.
+        """
         return self.__cash_status.update_income(demand)
 
     def get_pantry_costs(self, pantry_quantity, pantry_costs_rate):
+        """
+        Update and get the costs from pantry.
+
+        Returns:
+          An integer representing the costs from pantry.
+        """
         return self.__cash_status.update_pantry_costs(pantry_quantity, pantry_costs_rate)
 
     def get_supplies_costs(self):
-        pantry_shortage = self.__pantry.get_shortage()
-        return self.__cash_status.update_supplies_costs(pantry_shortage)
+        """
+        Update and get the costs from pantry.
 
-    def get_employee_costs(self, number: int):
-        return self.__cash_status.update_employee_costs(number)
+        Returns:
+          An integer representing the supplies.
+        """
+        pantry_supplies_amount = self.__pantry.get_supplies_amount()
+        return self.__cash_status.update_supplies_costs(pantry_supplies_amount)
+
+    def get_baristas_costs(self, number: int):
+        """
+        Update and get the costs from baristas.
+
+        Args:
+          number: The number of baristas need to be paid.
+
+        Returns:
+          An integer representing the costs from baristas.
+        """
+        return self.__cash_status.update_baristas_costs(number)
 
     def update_cash_amount(self):
+        """
+        Update cash amount.
+        """
         self.__cash_status.update_cash_amount()
 
     def profit_reset(self):
+        """
+        Reset profit.
+        """
         self.__cash_status.profit_reset()
 
 
