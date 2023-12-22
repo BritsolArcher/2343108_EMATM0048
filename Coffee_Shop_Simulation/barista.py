@@ -7,37 +7,58 @@ from typing import Dict
 
 
 class Barista:
-    def __init__(self, name, speciality, is_special=False):
-        self.__name = name
+    """
+    A class representing a Barista.
+
+    Attributes:
+       __speciality: A string representing the coffee type that the barista is specialised in.
+       __salary: An integer representing the salary of the barista.
+    """
+    def __init__(self, speciality, is_special=False):
         self.__speciality = speciality if is_special else None
-        self.__labour_time = 80 * 60  # minutes
-        self.__paid_rate = 15
-        self.__paid_hour = 120
+        self.__salary = 15 * 120
 
     def is_special(self):
+        """
+        Check if the barista is specialised in one type of coffee.
+
+        returns:
+          A boolean indicating if the name already exists.
+        """
         return True if self.__speciality is not None else False
 
     def get_speciality(self):
         """
         Check if the name already exists in the name list of barista team.
-
-        Args:
-          name: The name of a new barista.
-
         returns:
           A boolean indicating if the name already exists.
         """
         return self.__speciality
 
     def get_salary(self):
-        return self.__paid_rate * self.__paid_hour
+        """
+        Get the salary of the barista
 
-    def labour_time_reset(self):
-        self.__labour_time = 80 * 60
+        Returns:
+            An integer representing the salary of the barista.
+        """
+        return self.__salary
 
 
 class BaristaTeam:
+    """
+    A class representing a Barista Team.
+
+    Attributes:
+       __baristas: A dictionary to representing the barista team.
+                   key is the barista name and the value is Barista instance.
+       __specialists: A dictionary to record any barista who is specialised in one type of coffee.
+       __total_labour_time: An integer representing the total labour of he barista team.
+    """
     def __init__(self):
+        """
+        Initializes the instance.
+        """
         self.__baristas: Dict[str, Barista] = {}
         self.__specialists = {
             "Expresso": set(),
@@ -90,8 +111,9 @@ class BaristaTeam:
                 while self.is_barista_name_exist(name) or name is None:
                     name = input("This name already exists, Please enter another: ")
 
+                # Check whether speciality in coffee type sets
                 is_special = speciality in self.__specialists.keys()
-                self.__baristas[name] = Barista(name, speciality, is_special=is_special)
+                self.__baristas[name] = Barista(speciality, is_special=is_special)
                 print(f"Barista {name} has been employed.")
 
                 if is_special:
@@ -117,13 +139,31 @@ class BaristaTeam:
             del self.__baristas[name]
 
     def baristas_number(self):
+        """
+        Get the number of baristas.
+
+        Returns:
+          An integer representing the number of baristas.
+        """
         return len(self.__baristas)
 
     def get_specialists(self):
+        """
+        Get the baristas who specialised in one type of coffee.
+
+        Returns:
+          An integer representing the number of baristas.
+        """
         return self.__specialists
 
     def reset_total_labour_time(self):
+        """
+        Reset labour status of all baristas.
+        """
         self.__total_labour_time = self.baristas_number() * 80 * 60
 
     def get_total_labour_time(self):
+        """
+        Get labour status of all baristas.
+        """
         return self.__total_labour_time

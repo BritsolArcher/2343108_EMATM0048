@@ -37,11 +37,11 @@ class Pantry:
     def is_ingredients_demand_exceed(self, consumption: dict):
         quantity = self.__quantity
         for ingredient in quantity.keys():
-            quantity[ingredient] -= consumption[ingredient]
-            if quantity[ingredient] < 0:  # Check whether ingredients are insufficient
+            # Check whether ingredients are insufficient
+            if quantity[ingredient] - consumption[ingredient] < 0:
                 return True
-            else:
-                return False
+
+        return False
 
     def consume_and_update_quantity(self, consumption: dict):  # Update quantity after consumption
         for ingredient in self.__quantity.keys():

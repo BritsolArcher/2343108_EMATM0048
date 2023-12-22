@@ -13,10 +13,6 @@ class CoffeeShop:
     """
     A class representing a coffee shop.
 
-    Overview:
-        This class models the functionality of a coffee shop,
-        including managing baristas, tracking cash and pantry status.
-
     Attributes:
         __name: A string variable recoding the name of the coffee shop.
         __barista_team: A class representing baristas
@@ -29,7 +25,7 @@ class CoffeeShop:
     """
     def __init__(self, name):
         """
-        Initializes the instance based on spam preference.
+        Initializes the instance.
 
         Args:
           name: Defines the name of a coffee shop.
@@ -118,6 +114,7 @@ class CoffeeShop:
         Args:
           coffee_type: The coffee type
           demand: The coffee demand.
+          reset_value: The reset value for the demand.
 
         Returns:
           A dictionary recording the previous ingredients consumption
@@ -129,7 +126,7 @@ class CoffeeShop:
 
     def update_ingredients_consumption(self, demand: dict, coffee_type: str, ingredients_consumption: dict):
         """
-        Update ingredients consumption based on the demand.
+        Update ingredients consumption based on a particular coffee's demand.
 
         Args:
           demand: The coffee demand.
@@ -147,7 +144,7 @@ class CoffeeShop:
 
     def update_demand(self, demand: dict):
         current_specialists_number = {}  # A dictionary recording the specialists number in each coffee type
-        specialists_time_consumption = {}
+        specialists_time_consumption = {}  # A dictionary recording the total specialists labour in different coffee
 
         specialists = self.__barista_team.get_specialists()
         total_labour_time = self.__barista_team.get_total_labour_time()
@@ -162,14 +159,35 @@ class CoffeeShop:
             if len(names) > 0:
                 current_specialists_number[coffee] = len(names)
 
-        # Provide coffee in specialised type first
+        def reset_value(coffee_demand: dict, coffee_type: str):
+            try:
+                value = int(input(f"Please reset the demand of {coffee_type}: "))
+                while value < 0:
+                    print("Please enter a non-negative integer!")
+                    value = int(input(f"Please reset the demand of {coffee_type}: "))
+
+            except ValueError:
+                print("Please enter a non-negative integer!")
+                value = coffee_demand[coffee_type]
+            return value
+
+        # Let specialists provide the coffee they specialised first
         if len(current_specialists_number) > 0:
             for coffee in current_specialists_number.keys():
                 ingredients_consumption = self.update_ingredients_consumption(demand, coffee, ingredients_consumption)
 
                 # Check whether ingredients demand is exceeded
                 while self.__pantry.is_ingredients_demand_exceed(ingredients_consumption):
-                    ingredients_consumption = self.reset_demand(demand, coffee, reset_value=-1)
+                    quantity = self.__pantry.get_quantity()
+                    print("Ingredients are not sufficient.")
+                    print(f"Milk need {ingredients_consumption['Milk'] - self.__ingredients_consumption['Milk']}, "
+                          f"pantry remain {quantity['Milk']}")
+                    print(f"Beans need {ingredients_consumption['Beans']-self.__ingredients_consumption['Beans']}, "
+                          f"pantry remain {quantity['Beans']}")
+                    print(f"Spices need {ingredients_consumption['Beans']-self.__ingredients_consumption['Spices']}, "
+                          f"pantry remain {quantity['Spices']}")
+                    reset_demand_value = reset_value(demand, coffee)
+                    ingredients_consumption = self.reset_demand(demand, coffee, reset_value=reset_demand_value)
 
                 # Record the specialists labour time
                 specialists_labour_time = current_specialists_number[coffee] * 80 * 60
@@ -179,6 +197,8 @@ class CoffeeShop:
                 # Check whether specialists labour exceeds constrain
                 if time_consumption <= specialists_labour_time:
                     total_labour_time -= time_consumption
+
+                    # Update __ingredients_consumption
                     self.__ingredients_consumption = ingredients_consumption
                 else:
                     specialists_time_consumption[coffee] = specialists_labour_time
@@ -190,7 +210,14 @@ class CoffeeShop:
                     time_consumption = coffee_remain * self.__coffe_produce_rate[coffee]
 
                     while total_labour_time - time_consumption - specialists_time_consumption[coffee] < 0:
-                        demand[coffee] = -1  # reset
+                        # Reset
+
+                        print(f"Labour is not sufficient, "
+                              f"need {time_consumption + specialists_time_consumption[coffee]}, "
+                              f"remain {total_labour_time}.")
+
+                        demand[coffee] = reset_value(demand, coffee)
+
                         if demand[coffee] <= coffee_finished:
                             time_consumption = 0.5 * demand[coffee] * self.__coffe_produce_rate[coffee]
                             total_labour_time -= time_consumption
@@ -208,11 +235,25 @@ class CoffeeShop:
             if coffee not in current_specialists_number.keys():
                 ingredients_consumption = self.update_ingredients_consumption(demand, coffee, ingredients_consumption)
                 while self.__pantry.is_ingredients_demand_exceed(ingredients_consumption):
-                    ingredients_consumption = self.reset_demand(demand, coffee, reset_value=-1)
+                    quantity = self.__pantry.get_quantity()
+                    print("Ingredients are not sufficient.")
+                    print(f"Milk need {ingredients_consumption['Milk'] - self.__ingredients_consumption['Milk']}, "
+                          f"pantry remain {quantity['Milk']}")
+                    print(f"Beans need {ingredients_consumption['Beans'] - self.__ingredients_consumption['Beans']}, "
+                          f"pantry remain {quantity['Beans']}")
+                    print(f"Spices need {ingredients_consumption['Beans'] - self.__ingredients_consumption['Spices']}, "
+                          f"pantry remain {quantity['Spices']}")
+                    reset_demand_value = reset_value(demand, coffee)
+                    ingredients_consumption = self.reset_demand(demand, coffee, reset_value=reset_demand_value)
 
                 time_consumption = demand[coffee] * self.__coffe_produce_rate[coffee]
                 while total_labour_time - time_consumption < 0:
-                    ingredients_consumption = self.reset_demand(demand, coffee, reset_value=-1)
+                    print(f"Labour is not sufficient, "
+                          f"need {time_consumption}, "
+                          f"remain {total_labour_time}.")
+
+                    reset_demand = reset_value(demand, coffee)
+                    ingredients_consumption = self.reset_demand(demand, coffee, reset_value=reset_demand)
 
                 total_labour_time -= time_consumption
                 self.__ingredients_consumption = ingredients_consumption
@@ -241,8 +282,11 @@ class CoffeeShop:
         """
         Update and get the income (not the pure profit) from coffee sales.
 
+        Args:
+            demand: A dictionary representing the coffee demand.
+
         Returns:
-          An integer representing the income from coffee sales.
+          A dictionary representing the income from coffee sales.
         """
         return self.__cash_status.update_income(demand)
 
@@ -257,10 +301,10 @@ class CoffeeShop:
 
     def get_supplies_costs(self):
         """
-        Update and get the costs from pantry.
+        Update and get the costs from supplies.
 
         Returns:
-          An integer representing the supplies.
+          A dictionary representing the cost from ingredients.
         """
         pantry_supplies_amount = self.__pantry.get_supplies_amount()
         return self.__cash_status.update_supplies_costs(pantry_supplies_amount)
@@ -285,7 +329,7 @@ class CoffeeShop:
 
     def profit_reset(self):
         """
-        Reset profit.
+        Reset attributes related to profit in __cash_status.
         """
         self.__cash_status.profit_reset()
 
