@@ -148,13 +148,13 @@ class CoffeeShop:
 
         specialists = self.__barista_team.get_specialists()
         total_labour_time = self.__barista_team.get_total_labour_time()
-        # Record the ingredients consumption
+        # Record the ingredients TOTAL consumption
         ingredients_consumption = {
             "Milk": 0,
             "Beans": 0,
             "Spices": 0
         }
-        # Count the number of specialists
+        # Count the number of specialists in different coffee types
         for coffee, names in specialists.items():
             if len(names) > 0:
                 current_specialists_number[coffee] = len(names)
@@ -181,11 +181,11 @@ class CoffeeShop:
                     quantity = self.__pantry.get_quantity()
                     print("Ingredients are not sufficient.")
                     print(f"Milk need {ingredients_consumption['Milk'] - self.__ingredients_consumption['Milk']}, "
-                          f"pantry remain {quantity['Milk']}")
+                          f"pantry remain {quantity['Milk'] - self.__ingredients_consumption['Milk']}")
                     print(f"Beans need {ingredients_consumption['Beans']-self.__ingredients_consumption['Beans']}, "
-                          f"pantry remain {quantity['Beans']}")
+                          f"pantry remain {quantity['Beans']-self.__ingredients_consumption['Beans']}")
                     print(f"Spices need {ingredients_consumption['Beans']-self.__ingredients_consumption['Spices']}, "
-                          f"pantry remain {quantity['Spices']}")
+                          f"pantry remain {quantity['Spices']-self.__ingredients_consumption['Spices']}")
                     reset_demand_value = reset_value(demand, coffee)
                     ingredients_consumption = self.reset_demand(demand, coffee, reset_value=reset_demand_value)
 
@@ -196,6 +196,7 @@ class CoffeeShop:
 
                 # Check whether specialists labour exceeds constrain
                 if time_consumption <= specialists_labour_time:
+                    # Update total_labour_time
                     total_labour_time -= time_consumption
 
                     # Update __ingredients_consumption
@@ -207,28 +208,38 @@ class CoffeeShop:
                 for coffee in specialists_time_consumption.keys():
                     coffee_finished = specialists_time_consumption[coffee]/(self.__coffe_produce_rate[coffee]*0.5)
                     coffee_remain = demand[coffee] - int(coffee_finished)
-                    time_consumption = coffee_remain * self.__coffe_produce_rate[coffee]
 
-                    while total_labour_time - time_consumption - specialists_time_consumption[coffee] < 0:
-                        # Reset
+                    # Remaining coffee will be produced at regular rate
+                    remain_time_consumption = coffee_remain * self.__coffe_produce_rate[coffee]
+                    time_consumption = remain_time_consumption + specialists_time_consumption[coffee]
+                    while total_labour_time < remain_time_consumption + specialists_time_consumption[coffee]:
 
                         print(f"Labour is not sufficient, "
-                              f"need {time_consumption + specialists_time_consumption[coffee]}, "
+                              f"need {remain_time_consumption + specialists_time_consumption[coffee]}, "
                               f"remain {total_labour_time}.")
 
                         demand[coffee] = reset_value(demand, coffee)
 
+                        ingredients_consumption = (
+                            self.update_ingredients_consumption(demand, coffee, ingredients_consumption))
+
                         if demand[coffee] <= coffee_finished:
                             time_consumption = 0.5 * demand[coffee] * self.__coffe_produce_rate[coffee]
-                            total_labour_time -= time_consumption
-                            self.__ingredients_consumption = (
-                                self.update_ingredients_consumption(demand, coffee, ingredients_consumption))
+                            while total_labour_time < time_consumption:
+                                print(f"Labour is not sufficient, "
+                                      f"need {time_consumption}, "
+                                      f"remain {total_labour_time}.")
+
+                                reset_demand = reset_value(demand, coffee)
+                                ingredients_consumption = self.reset_demand(demand, coffee, reset_value=reset_demand)
+                                time_consumption = 0.5 * demand[coffee] * self.__coffe_produce_rate[coffee]
                             break
                         else:
                             coffee_remain = demand[coffee] - int(coffee_finished)
-                            time_consumption = coffee_remain * self.__coffe_produce_rate[coffee]
+                            remain_time_consumption = coffee_remain * self.__coffe_produce_rate[coffee]
+                            time_consumption = remain_time_consumption + specialists_time_consumption[coffee]
 
-                    total_labour_time -= (time_consumption + specialists_time_consumption[coffee])
+                    total_labour_time -= time_consumption
                     self.__ingredients_consumption = ingredients_consumption
 
         for coffee in demand.keys():
@@ -238,11 +249,11 @@ class CoffeeShop:
                     quantity = self.__pantry.get_quantity()
                     print("Ingredients are not sufficient.")
                     print(f"Milk need {ingredients_consumption['Milk'] - self.__ingredients_consumption['Milk']}, "
-                          f"pantry remain {quantity['Milk']}")
+                          f"pantry remain {quantity['Milk'] - self.__ingredients_consumption['Milk']}")
                     print(f"Beans need {ingredients_consumption['Beans'] - self.__ingredients_consumption['Beans']}, "
-                          f"pantry remain {quantity['Beans']}")
+                          f"pantry remain {quantity['Beans'] - self.__ingredients_consumption['Beans']}")
                     print(f"Spices need {ingredients_consumption['Beans'] - self.__ingredients_consumption['Spices']}, "
-                          f"pantry remain {quantity['Spices']}")
+                          f"pantry remain {quantity['Spices'] - self.__ingredients_consumption['Beans']}")
                     reset_demand_value = reset_value(demand, coffee)
                     ingredients_consumption = self.reset_demand(demand, coffee, reset_value=reset_demand_value)
 
@@ -254,10 +265,10 @@ class CoffeeShop:
 
                     reset_demand = reset_value(demand, coffee)
                     ingredients_consumption = self.reset_demand(demand, coffee, reset_value=reset_demand)
+                    time_consumption = demand[coffee] * self.__coffe_produce_rate[coffee]
 
                 total_labour_time -= time_consumption
                 self.__ingredients_consumption = ingredients_consumption
-
         return demand
 
     def get_pantry_ingredients(self):

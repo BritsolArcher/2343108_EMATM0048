@@ -7,7 +7,6 @@ from coffee_shop import CoffeeShop
 
 
 def main():
-
     pass
 
 

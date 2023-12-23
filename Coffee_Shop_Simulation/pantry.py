@@ -8,6 +8,16 @@ import math
 
 
 class Pantry:
+    """
+    A class representing a pantry.
+
+    Attributes:
+        __full_quantity: A dictionary representing the max quantity of each ingredient.
+        __quantity: A dictionary representing the current quantity of each ingredient.
+        __depreciation: A dictionary representing the depreciation rate of each ingredient.
+        __ingredient_price: A dictionary representing the price of each ingredient.
+    """
+
     def __init__(self):
         self.__full_quantity = DataLoad()("pantry", "Ingredient",  # can't be modified
                                           "Quantity(ml or g)")
@@ -16,8 +26,8 @@ class Pantry:
                                      "Quantity(ml or g)")
         self.__depreciation = DataLoad()("pantry", "Ingredient",
                                          "Depreciation(ratio/month)")
-        self.__pantry_costs_rate = DataLoad()("pantry", "Ingredient",
-                                              "Pantry costs(pounds/ml or pounds/g)")
+        self.__ingredient_price = DataLoad()("pantry", "Ingredient",
+                                             "Pantry costs(pounds/ml or pounds/g)")
 
     def get_quantity(self):
         return self.__quantity
@@ -31,8 +41,8 @@ class Pantry:
     def get_depreciation(self):
         return self.__depreciation
 
-    def get_pantry_costs_rate(self):
-        return self.__pantry_costs_rate
+    def get_ingredient_price(self):
+        return self.__ingredient_price
 
     def is_ingredients_demand_exceed(self, consumption: dict):
         quantity = self.__quantity
@@ -40,7 +50,6 @@ class Pantry:
             # Check whether ingredients are insufficient
             if quantity[ingredient] - consumption[ingredient] < 0:
                 return True
-
         return False
 
     def consume_and_update_quantity(self, consumption: dict):  # Update quantity after consumption
@@ -60,4 +69,3 @@ class Pantry:
 
     def pantry_quantity_reset(self):
         self.__quantity = self.__full_quantity
-
