@@ -14,6 +14,7 @@ class Barista:
        __speciality: A string representing the coffee type that the barista is specialised in.
        __salary: An integer representing the salary of the barista.
     """
+
     def __init__(self, speciality, is_special=False):
         self.__speciality = speciality if is_special else None
         self.__salary = 15 * 120
@@ -55,6 +56,7 @@ class BaristaTeam:
        __specialists: A dictionary to record any barista who is specialised in one type of coffee.
        __total_labour_time: An integer representing the total labour of he barista team.
     """
+
     def __init__(self):
         """
         Initializes the instance.
@@ -114,29 +116,64 @@ class BaristaTeam:
                 # Check whether speciality in coffee type sets
                 is_special = speciality in self.__specialists.keys()
                 self.__baristas[name] = Barista(speciality, is_special=is_special)
-                print(f"Barista {name} has been employed.")
+                print(f"Barista {name} has been added.")
 
                 if is_special:
                     self.__specialists[speciality].add(name)
                     print(f"{name} specialises in {speciality}")
                 else:
-                    print(f"{name} doesn't have a speciality")
-            return True
+                    print(f"{name} doesn't have any speciality")
         else:
-            return False
+            if self.baristas_number() == 4:
+                print("This coffee shop has already been fully employed. "
+                      "This month will not have any change in baristas.")
 
-    def remove_baristas(self, *names):
+            elif self.baristas_number() < 4:
+                add_number = 4 - self.baristas_number()
+                print(f"Only {add_number} baristas will be added.")
+                count = 0
+                for name, speciality in baristas.items():
+                    if count < add_number:
+                        break
+                    # Check whether barista name exists or the input is null
+                    while self.is_barista_name_exist(name) or name is None:
+                        name = input("This name already exists, Please enter another: ")
+
+                    # Check whether speciality in coffee type sets
+                    is_special = speciality in self.__specialists.keys()
+                    self.__baristas[name] = Barista(speciality, is_special=is_special)
+                    print(f"Barista {name} has been added.")
+
+                    if is_special:
+                        self.__specialists[speciality].add(name)
+                        print(f"{name} specialises in {speciality}")
+                    else:
+                        print(f"{name} doesn't have any speciality")
+                    count += 1
+
+    def remove_baristas(self, number: int, names: set):
         """
         Dismiss baristas in barista team.
 
         Args:
+          number: The number of baristas to be removed
           names: The name of baristas to dismiss.
         """
-        for name in names:
-            if self.__baristas[name].is_special():
-                speciality = self.__baristas[name].get_speciality()
-                self.__specialists[speciality].discard(name)
-            del self.__baristas[name]
+        if self.baristas_number() - number >= 1:
+            for name in names:
+                if self.__baristas[name].is_special():
+                    speciality = self.__baristas[name].get_speciality()
+                    self.__specialists[speciality].discard(name)
+                del self.__baristas[name]
+        else:
+            remove_number = self.baristas_number() - 1
+            print(f"Only {remove_number} baristas will be removed because coffee must have at least one barista.")
+            while self.baristas_number() > 1:
+                for name in names:
+                    if self.__baristas[name].is_special():
+                        speciality = self.__baristas[name].get_speciality()
+                        self.__specialists[speciality].discard(name)
+                    del self.__baristas[name]
 
     def baristas_number(self):
         """

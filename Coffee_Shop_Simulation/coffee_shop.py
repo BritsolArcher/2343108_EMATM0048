@@ -14,7 +14,6 @@ class CoffeeShop:
     A class representing a coffee shop.
 
     Attributes:
-        __name: A string variable recoding the name of the coffee shop.
         __barista_team: A class representing baristas
         __pantry: A class representing the pantry of the coffee shop
         __cash_status: A class representing the cash status of the coffee shop
@@ -23,15 +22,10 @@ class CoffeeShop:
         __coffe_produce_rate: A dictionary with coffee types as keys and their corresponding production time as values.
         __ingredients_consumption: A dictionary recording the ingredients consumption
     """
-    def __init__(self, name):
+    def __init__(self):
         """
         Initializes the instance.
-
-        Args:
-          name: Defines the name of a coffee shop.
         """
-        self.__name = name
-
         self.__barista_team = BaristaTeam()
         self.__pantry = Pantry()
         self.__cash_status = CashStatus()
@@ -75,6 +69,15 @@ class CoffeeShop:
           names: The name of baristas to dismiss.
         """
         self.__barista_team.remove_baristas(names)
+
+    def get_baristas_names(self):
+        """
+        Get baristas names.
+
+        returns:
+          A set of the baristas names.
+        """
+        return self.__barista_team.get_baristas_names()
 
     def barista_team_number(self):
         """
@@ -288,6 +291,16 @@ class CoffeeShop:
           An integer representing the cash amount.
         """
         return self.__cash_status.get_cash_amount()
+
+    def is_not_bankrupt(self):
+        """
+        Check if the coffee shop is bankrupt.
+
+        Returns:
+          An boolean representing the status of the coffee shop.
+        """
+        coffee_shop_status = (self.get_cash_amount() >= 0)
+        return coffee_shop_status
 
     def get_income(self, demand: dict):
         """
