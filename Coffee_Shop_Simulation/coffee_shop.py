@@ -61,14 +61,15 @@ class CoffeeShop:
         """
         self.__barista_team.add_baristas(number, baristas)
 
-    def remove_baristas(self, *names):
+    def remove_baristas(self, number: int, names: set):
         """
         Dismiss baristas in barista team.
 
         Args:
+          number: The number of baristas to dismiss
           names: The name of baristas to dismiss.
         """
-        self.__barista_team.remove_baristas(names)
+        self.__barista_team.remove_baristas(number, names)
 
     def get_baristas_names(self):
         """

@@ -110,9 +110,8 @@ class BaristaTeam:
             for name, speciality in baristas.items():
 
                 # Check whether barista name exists or the input is null
-                while self.is_barista_name_exist(name) or name is None:
-                    name = input("This name already exists, Please enter another: ")
-
+                # while self.is_barista_name_exist(name) or name is None:
+                #     name = input("This name already exists, Please enter another: ")
                 # Check whether speciality in coffee type sets
                 is_special = speciality in self.__specialists.keys()
                 self.__baristas[name] = Barista(speciality, is_special=is_special)
@@ -133,11 +132,11 @@ class BaristaTeam:
                 print(f"Only {add_number} baristas will be added.")
                 count = 0
                 for name, speciality in baristas.items():
-                    if count < add_number:
+                    if count == add_number:
                         break
                     # Check whether barista name exists or the input is null
-                    while self.is_barista_name_exist(name) or name is None:
-                        name = input("This name already exists, Please enter another: ")
+                    # while self.is_barista_name_exist(name) or name is None:
+                    #     name = input("This name already exists, Please enter another: ")
 
                     # Check whether speciality in coffee type sets
                     is_special = speciality in self.__specialists.keys()
@@ -146,9 +145,9 @@ class BaristaTeam:
 
                     if is_special:
                         self.__specialists[speciality].add(name)
-                        print(f"{name} specialises in {speciality}")
+                        print(f"Barista {name} specialises in {speciality}")
                     else:
-                        print(f"{name} doesn't have any speciality")
+                        print(f"Barista {name} doesn't have any speciality")
                     count += 1
 
     def remove_baristas(self, number: int, names: set):
@@ -165,15 +164,23 @@ class BaristaTeam:
                     speciality = self.__baristas[name].get_speciality()
                     self.__specialists[speciality].discard(name)
                 del self.__baristas[name]
+
         else:
             remove_number = self.baristas_number() - 1
-            print(f"Only {remove_number} baristas will be removed because coffee must have at least one barista.")
-            while self.baristas_number() > 1:
+            if self.baristas_number() == 0:
+                print(f"No baristas will be removed because coffee shop must have at least one barista.")
+                return
+            else:
+                print(f"Only {remove_number} baristas will be removed "
+                      f"because coffee shop must have at least one barista.")
+
                 for name in names:
-                    if self.__baristas[name].is_special():
-                        speciality = self.__baristas[name].get_speciality()
-                        self.__specialists[speciality].discard(name)
-                    del self.__baristas[name]
+                    if self.baristas_number() > 1:
+                        if self.__baristas[name].is_special():
+                            speciality = self.__baristas[name].get_speciality()
+                            self.__specialists[speciality].discard(name)
+                        del self.__baristas[name]
+                        print(f"Barista {name} has been removed.")
 
     def baristas_number(self):
         """
