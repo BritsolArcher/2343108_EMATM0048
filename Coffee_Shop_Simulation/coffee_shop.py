@@ -31,7 +31,7 @@ class CoffeeShop:
         self.__cash_status = CashStatus()
 
         self.__max_demand = DataLoad()("demand", "Coffee Types",
-                                       "Monthly Demand")
+                                       "Monthly Demand", False)
 
         self.__ingredients_consumption_rate = {
             "Expresso": {"Milk": 0, "Beans": 8, "Spices": 0},
@@ -43,7 +43,7 @@ class CoffeeShop:
         }
 
         self.__coffe_produce_rate = DataLoad()("ingredients", "Coffee Types",
-                                               "Time to Prepare (in minutes)")
+                                               "Time to Prepare (in minutes)", False)
 
         self.__ingredients_consumption = {
             "Milk": 0,
@@ -273,6 +273,8 @@ class CoffeeShop:
 
                 total_labour_time -= time_consumption
                 self.__ingredients_consumption = ingredients_consumption
+
+            print(f"{coffee} finished")  # test
         return demand
 
     def get_pantry_ingredients(self):

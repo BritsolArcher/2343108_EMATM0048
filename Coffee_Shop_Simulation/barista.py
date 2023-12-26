@@ -149,6 +149,7 @@ class BaristaTeam:
                     else:
                         print(f"Barista {name} doesn't have any speciality")
                     count += 1
+        self.reset_total_labour_time()
 
     def remove_baristas(self, number: int, names: set):
         """
@@ -181,6 +182,7 @@ class BaristaTeam:
                             self.__specialists[speciality].discard(name)
                         del self.__baristas[name]
                         print(f"Barista {name} has been removed.")
+        self.reset_total_labour_time()
 
     def baristas_number(self):
         """

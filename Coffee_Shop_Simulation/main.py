@@ -38,6 +38,7 @@ def input_baristas(number: int):
         while name in baristas.keys() or is_blank(name):
             name = input("This name already exists or you didn't input anything, Please enter another: ")
         code = input("Please enter the code of coffee type: ")
+        print("")
 
         speciality = specialists[code] if code in specialists.keys() else None
         baristas[name] = speciality
@@ -47,21 +48,23 @@ def input_baristas(number: int):
 
 def input_demand():
     max_demand = DataLoad()("demand", "Coffee Types",
-                            "Monthly Demand")
+                            "Monthly Demand", False)
     demand = {}
 
     for coffee in max_demand:
         try:
             print()
-            demand[coffee] = int(input(f"{coffee} demand is: "))
-            while demand[coffee] > max_demand[coffee]:
-                print(f"{coffee} demand exceeded maximum demand!")
+            demand[coffee] = int(input(f"{coffee} max demand is: {max_demand[coffee]}, "
+                                       f"please set this month's demand: "))
+
+            while demand[coffee] > max_demand[coffee] or demand[coffee] < 0:
+                print(f"Invalid input! {coffee}, please reset the demand!")
                 demand[coffee] = int(input(f"{coffee} demand is: "))
 
         except ValueError:
             print(f"Invalid input! {coffee} demand will be set to maximum demand!")
             demand[coffee] = max_demand[coffee]
-
+        print("")
     return demand
 
 
@@ -111,11 +114,13 @@ def main():
         except ValueError:
             print("Invalid input. This month will not have any change in baristas.")
 
-        print(coffee_shop.barista_team_number())
         if coffee_shop.barista_team_number() == 0:
             print("The coffee shop must have at least one barista!\n")
             continue
 
+        demand = input_demand()
+        coffee_shop.update_demand(demand)
+        print(demand)
         opening_month += 1
 
 

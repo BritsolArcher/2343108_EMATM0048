@@ -15,16 +15,20 @@ class DataLoad:
             "supplier": "tables/supplier.csv"
         }
 
-    def csv_to_dict(self, table_name: str, key_column, value_column):
+    def csv_to_dict(self, table_name: str, key_column, value_column, is_float=True):
         data = {}
         with open(self.__tables_path[table_name]) as file:
             reader = csv.DictReader(file)
-            for row in reader:
-                data[row[key_column]] = row[value_column]
+            if is_float:
+                for row in reader:
+                    data[row[key_column]] = float(row[value_column])
+            else:
+                for row in reader:
+                    data[row[key_column]] = int(row[value_column])
         return data
 
-    def __call__(self, table_name: str, key_column, value_column):
-        return self.csv_to_dict(table_name, key_column, value_column)
+    def __call__(self, table_name: str, key_column, value_column, is_float=True):
+        return self.csv_to_dict(table_name, key_column, value_column, is_float=is_float)
 
 
 
