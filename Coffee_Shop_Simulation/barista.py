@@ -16,6 +16,12 @@ class Barista:
     """
 
     def __init__(self, speciality, is_special=False):
+        """
+        Initializes the instance.
+        Args:
+        speciality: The coffee type that the barista specialised in.
+        is_special: Whether the barista specialises in one type of coffee
+        """
         self.__speciality = speciality if is_special else None
         self.__salary = 15 * 120
 

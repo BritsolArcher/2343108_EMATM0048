@@ -68,6 +68,18 @@ def input_demand():
     return demand
 
 
+def input_demand_test():
+    max_demand = DataLoad()("demand", "Coffee Types",
+                            "Monthly Demand", False)
+    demand = {}
+
+    for coffee in max_demand:
+        demand[coffee] = int(input(f"{coffee} max demand is: {max_demand[coffee]}, "
+                                   f"please set this month's demand: "))
+
+    return demand
+
+
 def main():
     coffee_shop = CoffeeShop()
 
@@ -99,6 +111,14 @@ def main():
 
                 update_number = -update_number
 
+                if coffee_shop.barista_team_number() < update_number:
+                    print("Invalid input!")
+                    update_number = coffee_shop.barista_team_number() - 1 if coffee_shop.barista_team_number() > 1 else 0
+                    if update_number == 0:
+                        print("This month will not have any change in baristas.")
+                    else:
+                        print(f"The number of baristas to remove will be set to {update_number}")
+
                 for i in range(update_number):
                     name = input("Please enter the name of barista: ")
                     while name not in coffee_shop.get_baristas_names() or name in names:
@@ -118,7 +138,7 @@ def main():
             print("The coffee shop must have at least one barista!\n")
             continue
 
-        demand = input_demand()
+        demand = input_demand_test()
         coffee_shop.update_demand(demand)
         print(demand)
         opening_month += 1
