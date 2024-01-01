@@ -1,2 +1,2 @@
-Supplier Name,Milk(pounds/ml),Beans(pounds/g),Spices(pounds/g)
-Hasty,0.0003,0.1,0.05
+Supplier Name,Milk(pounds/L),Beans(pounds/g),Spices(pounds/g)
+Hasty,0.3,0.1,0.05

@@ -1,4 +1,4 @@
-Ingredient,Quantity(ml or g),Depreciation(ratio/month),Pantry costs(pounds/ml or pounds/g)
-Milk,300000,0.4,0.0001
+Ingredient,Quantity(L or g),Depreciation(ratio/month),Pantry costs(pounds/L or pounds/g)
+Milk,300,0.4,0.1
 Beans,20000,0.1,0.001
 Spices,4000,0.1,0.001

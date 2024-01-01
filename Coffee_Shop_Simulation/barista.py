@@ -42,15 +42,6 @@ class Barista:
         """
         return self.__speciality
 
-    def get_salary(self):
-        """
-        Get the salary of the barista
-
-        Returns:
-            An integer representing the salary of the barista.
-        """
-        return self.__salary
-
 
 class BaristaTeam:
     """
@@ -125,9 +116,10 @@ class BaristaTeam:
 
                 if is_special:
                     self.__specialists[speciality].add(name)
-                    print(f"{name} specialises in {speciality}")
+                    print(f"Barista {name} specialises in {speciality}.", end=" ")
                 else:
-                    print(f"{name} doesn't have any speciality")
+                    print(f"Barista {name} doesn't have any speciality.", end=" ")
+                print("Hourly rate = 15 hours")
         else:
             if self.baristas_number() == 4:
                 print("This coffee shop has already been fully employed. "
@@ -147,13 +139,14 @@ class BaristaTeam:
                     # Check whether speciality in coffee type sets
                     is_special = speciality in self.__specialists.keys()
                     self.__baristas[name] = Barista(speciality, is_special=is_special)
-                    print(f"Barista {name} has been added.")
+                    print(f"Barista {name} has been added.", end=" ")
 
                     if is_special:
                         self.__specialists[speciality].add(name)
-                        print(f"Barista {name} specialises in {speciality}")
+                        print(f"Barista {name} specialises in {speciality}.", end=" ")
                     else:
-                        print(f"Barista {name} doesn't have any speciality")
+                        print(f"Barista {name} doesn't have any speciality.", end=" ")
+                    print("Hourly rate = 15 hours")
                     count += 1
         self.reset_total_labour_time()
 
@@ -198,6 +191,20 @@ class BaristaTeam:
           An integer representing the number of baristas.
         """
         return len(self.__baristas)
+
+    def get_baristas_info(self):
+        """
+        Get the baristas who specialised in one type of coffee.
+
+        Returns:
+          An integer representing the number of baristas.
+        """
+        for name in self.__baristas:
+            if self.__baristas[name].is_special():
+                speciality = self.__baristas[name].get_speciality()
+                print(f"Barista {name} specialises in {speciality}, hourly rate = 15 hours.")
+            else:
+                print(f"Barista {name}, hourly rate = 15 hours.")
 
     def get_specialists(self):
         """

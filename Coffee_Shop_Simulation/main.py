@@ -81,7 +81,23 @@ def input_demand_test():
 
 
 def main():
-    coffee_shop = CoffeeShop()
+
+    name = input("Please input the coffee shop name: ")
+
+    input_flag = True
+    while input_flag:
+        if name == "":
+            name = input("Invalid input, please reenter the name: ")
+        elif name != "":
+            for s in name:
+                if s != " ":
+                    input_flag = False
+                break
+            if not input_flag:
+                break
+            name = input("Invalid input, please reenter the name: ")
+
+    coffee_shop = CoffeeShop(name)
 
     try:
         end_month = int(input("Please enter the month you would like to end the simulation: "))
@@ -138,10 +154,64 @@ def main():
             print("The coffee shop must have at least one barista!\n")
             continue
 
-        demand = input_demand_test()
+        demand = input_demand()
         coffee_shop.update_demand(demand)
-        print(demand)
-        opening_month += 1
+
+        for barista in coffee_shop.get_baristas_names():
+            print(f"Paid {barista}, hourly rate=15 hours, amount £1800.")
+        coffee_shop.update_baristas_costs()
+
+        print("")
+
+        print("Paid rent/utilities £1500")
+
+        print("")
+
+        print("------------Pantry--------------\n")
+        pantry_costs = coffee_shop.update_pantry_costs()
+        for ingredient, costs in pantry_costs.items():
+            print(f"Pantry {ingredient} cost £{costs}")
+
+        print("After coffee production: ")
+        quantity = coffee_shop.get_pantry_ingredients()
+        print(f"Pantry milk remain {quantity['Milk']} L, capacity = 300L.")
+        print(f"Pantry beans remain {quantity['Beans']} g, capacity = 20000g.")
+        print(f"Pantry spices remain {quantity['Spices']} g, capacity = 4000g.")
+
+        print("")
+
+        print("After depreciation: ")
+        pantry_remain = coffee_shop.depreciate_and_update_quantity()
+        print(f"Pantry milk remain {pantry_remain['Milk']} L, capacity = 300L.")
+        print(f"Pantry beans remain {pantry_remain['Beans']} g, capacity = 20000g.")
+        print(f"Pantry spices remain {pantry_remain['Spices']} g, capacity = 4000g.")
+
+        print("")
+
+        pantry_supplies_costs = coffee_shop.update_supplies_costs()
+        for ingredient, costs in pantry_supplies_costs.items():
+            print(f"Supply {ingredient} cost £{costs}")
+        coffee_shop.pantry_quantity_reset()
+        print("")
+
+        coffee_shop.update_income(demand)
+        coffee_shop.update_cash_amount()
+
+        coffee_shop.profit_reset()
+
+        print(f"Coffee Shop {coffee_shop.get_coffee_shop_name()}, cash £{coffee_shop.get_cash_amount()}.")
+
+        print("")
+        print("------------Barista-------------\n")
+        coffee_shop.get_baristas_info()
+
+        if coffee_shop.is_not_bankrupt():
+            opening_month += 1
+        else:
+            print("================================")
+            print(f"====== SIMULATING month {opening_month} ======")
+            print("================================")
+            print(f"Coffee Shop {coffee_shop.get_coffee_shop_name()} has been bankrupt.")
 
 
 if __name__ == "__main__":

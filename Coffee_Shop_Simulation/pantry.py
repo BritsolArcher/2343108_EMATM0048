@@ -23,14 +23,12 @@ class Pantry:
         Initializes the instance.
         """
         self.__full_quantity = DataLoad()("pantry", "Ingredient",  # can't be modified
-                                          "Quantity(ml or g)")
+                                          "Quantity(L or g)")
 
         self.__quantity = DataLoad()("pantry", "Ingredient",
-                                     "Quantity(ml or g)")
+                                     "Quantity(L or g)")
         self.__depreciation = DataLoad()("pantry", "Ingredient",
                                          "Depreciation(ratio/month)")
-        self.__ingredient_price = DataLoad()("pantry", "Ingredient",
-                                             "Pantry costs(pounds/ml or pounds/g)")
 
     def get_quantity(self):
         """
@@ -62,15 +60,6 @@ class Pantry:
         """
         return self.__depreciation
 
-    def get_ingredient_price(self):
-        """
-        Gets the price of the ingredient.
-
-        Returns:
-            A dictionary representing the ingredient price.
-        """
-        return self.__ingredient_price
-
     def is_ingredients_demand_exceed(self, consumption: dict):
         """
         Check whether the ingredients exceed the pantry's capacity.
@@ -92,7 +81,7 @@ class Pantry:
         for ingredient in self.__quantity.keys():
             self.__quantity[ingredient] -= consumption[ingredient]
 
-    def depreciate_and_update_quantity(self):  # update quantity after depreciation
+    def depreciate_and_update_quantity(self):
         """
         Calculate the depreciation and update the pantry's capacity.
         """

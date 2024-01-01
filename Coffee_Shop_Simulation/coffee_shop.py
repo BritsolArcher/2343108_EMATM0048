@@ -23,10 +23,14 @@ class CoffeeShop:
         __ingredients_consumption: A dictionary recording the ingredients consumption
     """
 
-    def __init__(self):
+    def __init__(self, name):
         """
         Initializes the instance.
+
+        Args:
+            name: The name of the coffee shop.
         """
+        self.__name = name
         self.__barista_team = BaristaTeam()
         self.__pantry = Pantry()
         self.__cash_status = CashStatus()
@@ -38,9 +42,9 @@ class CoffeeShop:
             "Expresso": {"Milk": 0, "Beans": 8, "Spices": 0},
             "Americano": {"Milk": 0, "Beans": 6, "Spices": 0},
             "Filter": {"Milk": 0, "Beans": 4, "Spices": 0},
-            "Macchiatto": {"Milk": 100, "Beans": 8, "Spices": 2},
-            "Flat White": {"Milk": 200, "Beans": 8, "Spices": 1},
-            "Latte": {"Milk": 300, "Beans": 8, "Spices": 3}
+            "Macchiatto": {"Milk": 0.1, "Beans": 8, "Spices": 2},
+            "Flat White": {"Milk": 0.2, "Beans": 8, "Spices": 1},
+            "Latte": {"Milk": 0.3, "Beans": 8, "Spices": 3}
         }
 
         self.__coffe_produce_rate = DataLoad()("ingredients", "Coffee Types",
@@ -51,6 +55,15 @@ class CoffeeShop:
             "Beans": 0,
             "Spices": 0
         }
+
+    def get_coffee_shop_name(self):
+        """
+        Get the name of the coffee shop
+
+        Returns:
+             A string representing the name of the coffee shop.
+        """
+        return self.__name
 
     def add_baristas(self, number: int, baristas: dict):
         """
@@ -80,6 +93,12 @@ class CoffeeShop:
           A set of the baristas names.
         """
         return self.__barista_team.get_baristas_names()
+
+    def get_baristas_info(self):
+        """
+        Get baristas information.
+        """
+        self.__barista_team.get_baristas_info()
 
     def barista_team_number(self):
         """
@@ -175,7 +194,7 @@ class CoffeeShop:
                 A boolean indicating whether the ingredients exceed the pantry's capacity.
             """
             consumption = {}
-            for ingredient in ingredient_consumption:
+            for ingredient in ingredient_consumption.keys():
                 consumption[ingredient] = self.__ingredients_consumption[ingredient] + ingredient_consumption[
                     ingredient]
             return self.__pantry.is_ingredients_demand_exceed(consumption)
@@ -189,8 +208,8 @@ class CoffeeShop:
                 while is_ingredients_demand_exceed(ingredients_consumption):
                     quantity = self.__pantry.get_quantity()
                     print("Ingredients are not sufficient.")
-                    print(f"Milk need {ingredients_consumption['Milk']} mL, "
-                          f"pantry remain {quantity['Milk'] - self.__ingredients_consumption['Milk']} mL")
+                    print(f"Milk need {ingredients_consumption['Milk']} L, "
+                          f"pantry remain {quantity['Milk'] - self.__ingredients_consumption['Milk']} L")
 
                     print(f"Beans need {ingredients_consumption['Beans']} g, "
                           f"pantry remain {quantity['Beans'] - self.__ingredients_consumption['Beans']} g")
@@ -264,7 +283,7 @@ class CoffeeShop:
                     for ingredient in self.__ingredients_consumption.keys():
                         capacity = "g"
                         if ingredient == "Milk":
-                            capacity = "mL"
+                            capacity = "L"
                         print(f"{ingredient} need {ingredients_consumption[ingredient]} {capacity}, "
                               f"pantry remain {quantity[ingredient] - self.__ingredients_consumption[ingredient]} "
                               f"{capacity}")
@@ -297,6 +316,13 @@ class CoffeeShop:
         """
         return self.__pantry.get_quantity()
 
+    def depreciate_and_update_quantity(self):
+        self.__pantry.depreciate_and_update_quantity()
+        return self.__pantry.get_quantity()
+
+    def pantry_quantity_reset(self):
+        self.__pantry.pantry_quantity_reset()
+
     def get_cash_amount(self):
         """
         Get the cash amount.
@@ -316,7 +342,7 @@ class CoffeeShop:
         coffee_shop_status = (self.get_cash_amount() >= 0)
         return coffee_shop_status
 
-    def get_income(self, demand: dict):
+    def update_income(self, demand: dict):
         """
         Update and get the income (not the pure profit) from coffee sales.
 
@@ -328,16 +354,18 @@ class CoffeeShop:
         """
         return self.__cash_status.update_income(demand)
 
-    def get_pantry_costs(self, pantry_quantity, pantry_costs_rate):
+    def update_pantry_costs(self):
         """
         Update and get the costs from pantry.
 
         Returns:
           An integer representing the costs from pantry.
         """
-        return self.__cash_status.update_pantry_costs(pantry_quantity, pantry_costs_rate)
+        self.__pantry.consume_and_update_quantity(self.__ingredients_consumption)
+        pantry_quantity = self.__pantry.get_quantity()
+        return self.__cash_status.update_pantry_costs(pantry_quantity)
 
-    def get_supplies_costs(self):
+    def update_supplies_costs(self):
         """
         Update and get the costs from supplies.
 
@@ -347,16 +375,14 @@ class CoffeeShop:
         pantry_supplies_amount = self.__pantry.get_supplies_amount()
         return self.__cash_status.update_supplies_costs(pantry_supplies_amount)
 
-    def get_baristas_costs(self, number: int):
+    def update_baristas_costs(self):
         """
         Update and get the costs from baristas.
-
-        Args:
-          number: The number of baristas need to be paid.
 
         Returns:
           An integer representing the costs from baristas.
         """
+        number = self.barista_team_number()
         return self.__cash_status.update_baristas_costs(number)
 
     def update_cash_amount(self):
