@@ -15,7 +15,6 @@ class Pantry:
         __full_quantity: A dictionary representing the max quantity of each ingredient.
         __quantity: A dictionary representing the current quantity of each ingredient.
         __depreciation: A dictionary representing the depreciation rate of each ingredient.
-        __ingredient_price: A dictionary representing the price of each ingredient.
     """
 
     def __init__(self):
@@ -46,7 +45,7 @@ class Pantry:
         Returns:
             A boolean representing whether the pantry is full.
         """
-        for ingredient in self.__full_quantity.keys():
+        for ingredient in self.__quantity.keys():
             if self.__quantity[ingredient] < self.__full_quantity[ingredient]:
                 return False
         return True
@@ -99,10 +98,12 @@ class Pantry:
         supplies_amount = {}
         for ingredient in self.__quantity.keys():
             supplies_amount[ingredient] = self.__full_quantity[ingredient] - self.__quantity[ingredient]
+
         return supplies_amount
 
     def pantry_quantity_reset(self):
         """
         Reset the quantity to full quantity.
         """
-        self.__quantity = self.__full_quantity
+        for ingredient in self.__quantity.keys():
+            self.__quantity[ingredient] = self.__full_quantity[ingredient]

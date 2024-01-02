@@ -395,4 +395,9 @@ class CoffeeShop:
         """
         Reset attributes related to profit in __cash_status.
         """
+        self.__ingredients_consumption = {
+            "Milk": 0,
+            "Beans": 0,
+            "Spices": 0
+        }
         self.__cash_status.profit_reset()

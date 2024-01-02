@@ -7,7 +7,7 @@ from coffee_shop import CoffeeShop
 from data_load import DataLoad
 
 
-def input_baristas(number: int):
+def input_baristas(number: int, baristas_names):
     baristas = {}
     specialists = {
         "0": "Expresso",
@@ -35,7 +35,7 @@ def input_baristas(number: int):
 
     for i in range(number):
         name = input("Please enter the name of the barista: ")
-        while name in baristas.keys() or is_blank(name):
+        while name in baristas.keys() or is_blank(name) or name in baristas_names:
             name = input("This name already exists or you didn't input anything, Please enter another: ")
         code = input("Please enter the code of coffee type: ")
         print("")
@@ -115,11 +115,13 @@ def main():
         print(f"====== SIMULATING month {opening_month} ======")
         print("================================")
         print("To add enter positive, to remove enter negative, no change enter 0.")
+
+        baristas_names = coffee_shop.get_baristas_names()
         try:
             update_number = int(input("Please enter the number of baristas you would like to add or remove: "))
 
             if update_number > 0:
-                baristas = input_baristas(update_number)
+                baristas = input_baristas(update_number, baristas_names)
                 coffee_shop.add_baristas(update_number, baristas)
 
             elif update_number < 0:

@@ -75,8 +75,8 @@ class CashStatus:
     def update_pantry_costs(self, pantry_quantity: dict):
         pantry_costs = {}
         for ingredient in pantry_quantity.keys():
-            pantry_costs[ingredient] = pantry_quantity[ingredient] * self.__pantry_costs_rate[ingredient]
-            self.__pantry_costs += round(pantry_costs[ingredient], 2)
+            pantry_costs[ingredient] = round(pantry_quantity[ingredient] * self.__pantry_costs_rate[ingredient], 2)
+            self.__pantry_costs += pantry_costs[ingredient]
         return pantry_costs
 
     def update_supplies_costs(self, pantry_shortage: dict):
