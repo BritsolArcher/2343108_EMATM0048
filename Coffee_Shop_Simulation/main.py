@@ -8,6 +8,16 @@ from data_load import DataLoad
 
 
 def input_baristas(number: int, baristas_names):
+    """
+    This function is utilised for inputting baristas.
+
+    Args:
+      number: The number of baristas to add.
+      baristas_names: The names of the baristas.
+
+    Returns:
+      A dictionary representing baristas.
+    """
     baristas = {}
     specialists = {
         "0": "Expresso",
@@ -22,6 +32,15 @@ def input_baristas(number: int, baristas_names):
     print("Other input represents the barista will not be specialise in any type of coffee.")
 
     def is_blank(barista_name: str):
+        """
+        Check whether the input name is blank or not.
+
+        Args:
+          barista_name: The names of the barista.
+
+        Returns:
+          A boolean indicating whether the name is blank or not.
+        """
         if barista_name == "":
             return True
 
@@ -47,6 +66,12 @@ def input_baristas(number: int, baristas_names):
 
 
 def input_demand():
+    """
+    This function is utilised for inputting coffee demands.
+
+    Returns:
+      A dictionary representing demand.
+    """
     max_demand = DataLoad()("demand", "Coffee Types",
                             "Monthly Demand", False)
     demand = {}
@@ -68,20 +93,10 @@ def input_demand():
     return demand
 
 
-def input_demand_test():
-    max_demand = DataLoad()("demand", "Coffee Types",
-                            "Monthly Demand", False)
-    demand = {}
-
-    for coffee in max_demand:
-        demand[coffee] = int(input(f"{coffee} max demand is: {max_demand[coffee]}, "
-                                   f"please set this month's demand: "))
-
-    return demand
-
-
 def main():
-
+    """
+    Main function of the program.
+    """
     name = input("Please input the coffee shop name: ")
 
     input_flag = True
@@ -112,7 +127,7 @@ def main():
     opening_month = 1  # Opening month of the coffee shop
     while opening_month <= end_month:
         print("================================")
-        print(f"====== SIMULATING month {opening_month} ======")
+        print(f"====== SIMULATING MONTH {opening_month} ======")
         print("================================")
         print("To add enter positive, to remove enter negative, no change enter 0.")
 
@@ -159,6 +174,11 @@ def main():
         demand = input_demand()
         coffee_shop.update_demand(demand)
 
+        print("")
+        for coffee in demand.keys():
+            print(f" {coffee} demand is {demand[coffee]}.")
+        print("")
+
         for barista in coffee_shop.get_baristas_names():
             print(f"Paid {barista}, hourly rate=15 hours, amount £1800.")
         coffee_shop.update_baristas_costs()
@@ -173,6 +193,8 @@ def main():
         pantry_costs = coffee_shop.update_pantry_costs()
         for ingredient, costs in pantry_costs.items():
             print(f"Pantry {ingredient} cost £{costs}")
+
+        print("")
 
         print("After coffee production: ")
         quantity = coffee_shop.get_pantry_ingredients()
@@ -196,11 +218,13 @@ def main():
         coffee_shop.pantry_quantity_reset()
         print("")
 
-        coffee_shop.update_income(demand)
+        income = coffee_shop.update_income(demand)
+        for coffee in income.keys():
+            print(f"Income from {coffee} is £{income[coffee]}.")
         coffee_shop.update_cash_amount()
-
         coffee_shop.profit_reset()
 
+        print("")
         print(f"Coffee Shop {coffee_shop.get_coffee_shop_name()}, cash £{coffee_shop.get_cash_amount()}.")
 
         print("")
@@ -210,10 +234,10 @@ def main():
         if coffee_shop.is_not_bankrupt():
             opening_month += 1
         else:
-            print("================================")
-            print(f"====== SIMULATING month {opening_month} ======")
-            print("================================")
+            print("")
+            print(f"====== FINAL MONTH {opening_month} ======")
             print(f"Coffee Shop {coffee_shop.get_coffee_shop_name()} has been bankrupt.")
+            break
 
 
 if __name__ == "__main__":

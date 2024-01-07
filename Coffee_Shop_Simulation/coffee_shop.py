@@ -14,16 +14,16 @@ class CoffeeShop:
     A class representing a coffee shop.
 
     Attributes:
-        __barista_team: A class representing baristas
-        __pantry: A class representing the pantry of the coffee shop
-        __cash_status: A class representing the cash status of the coffee shop
+        __barista_team: An object representing baristas
+        __pantry: An object representing the pantry of the coffee shop
+        __cash_status: An object representing the cash status of the coffee shop
         __max_demand: A dictionary with coffee types as keys and their corresponding maximum demand as values.
         __ingredients_consumption_rate: A nested dictionary recording ingredients consumption rate
         __coffe_produce_rate: A dictionary with coffee types as keys and their corresponding production time as values.
         __ingredients_consumption: A dictionary recording the ingredients consumption
     """
 
-    def __init__(self, name):
+    def __init__(self, name: str):
         """
         Initializes the instance.
 
@@ -194,9 +194,9 @@ class CoffeeShop:
                 A boolean indicating whether the ingredients exceed the pantry's capacity.
             """
             consumption = {}
-            for ingredient in ingredient_consumption.keys():
-                consumption[ingredient] = self.__ingredients_consumption[ingredient] + ingredient_consumption[
-                    ingredient]
+            for coffee_ingredient in ingredient_consumption.keys():
+                consumption[coffee_ingredient] = (self.__ingredients_consumption[coffee_ingredient] +
+                                                  ingredient_consumption[coffee_ingredient])
             return self.__pantry.is_ingredients_demand_exceed(consumption)
 
         # Let specialists provide the coffee they specialised first

@@ -20,6 +20,7 @@ class CashStatus:
         __supplies_costs: An integer representing the supplies costs.
         __baristas_costs: An integer representing the baristas costs.
     """
+
     def __init__(self):
         """
         Initializes the instance.
@@ -68,11 +69,17 @@ class CashStatus:
         """
         income = {}
         for coffee in self.__coffee_price.keys():
-            income[coffee] = demand[coffee] * self.__coffee_price[coffee]
+            income[coffee] = round(demand[coffee] * self.__coffee_price[coffee], 2)
             self.__income += income[coffee]
         return income
 
     def update_pantry_costs(self, pantry_quantity: dict):
+        """
+        Update and get the storing costs from pantry.
+
+        Returns:
+          A dictionary representing each ingredient storing cost.
+        """
         pantry_costs = {}
         for ingredient in pantry_quantity.keys():
             pantry_costs[ingredient] = round(pantry_quantity[ingredient] * self.__pantry_costs_rate[ingredient], 2)
@@ -88,8 +95,8 @@ class CashStatus:
         """
         supplies_costs = {}
         for ingredient in pantry_shortage.keys():
-            supplies_costs[ingredient] = pantry_shortage[ingredient] * self.__supplies_price[ingredient]
-            self.__supplies_costs += round(supplies_costs[ingredient], 2)
+            supplies_costs[ingredient] = round(pantry_shortage[ingredient] * self.__supplies_price[ingredient], 2)
+            self.__supplies_costs += supplies_costs[ingredient]
         return supplies_costs
 
     def update_baristas_costs(self, number: int):
@@ -113,11 +120,11 @@ class CashStatus:
         """
         self.__cash_amount += (self.__income - self.__rent_costs - self.__pantry_costs
                                - self.__supplies_costs - self.__baristas_costs)
+        self.__cash_amount = round(self.__cash_amount, 2)
 
     def profit_reset(self):
         """
         Reset attributes related to profit.
-
         """
         self.__income = 0
 

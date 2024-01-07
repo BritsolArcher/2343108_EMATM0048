@@ -164,6 +164,7 @@ class BaristaTeam:
                     speciality = self.__baristas[name].get_speciality()
                     self.__specialists[speciality].discard(name)
                 del self.__baristas[name]
+                print(f"Barista {name} has been removed.")
 
         else:
             remove_number = self.baristas_number() - 1
