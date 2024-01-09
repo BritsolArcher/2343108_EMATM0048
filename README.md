@@ -1,5 +1,5 @@
 # SDPA Project
-This project is the course work of `Software Development: Programming and Algorithms (SDPA)`, consisting of `Coffee Shop Simulation` and `Data Analytics`. The project's link is https://github.com/BritsolArcher/2343108_EMATM0048
+This project is the course work of `Software Development: Programming and Algorithms (SDPA)`, consisting of `Coffee Shop Simulation` and `Data Analytics`. The project's link is https://github.com/BritsolArcher/2343108_EMATM0048.
 # Coffee Shop Simulation
 ## Introduction
 This project is a text-based coffee shop simulation programme. In the simulation, the coffee shop needs to have baristas to make the coffee. It also needs to have milk, beans, and spices as ingredients that it purchases from a supplier. Each month the coffee shop owner must decide whether to add/remove baristas, how much coffee to sell for each type, and then pay expenses. The goal of the coffee shop is to make a profit and avoid going bankrupt.
