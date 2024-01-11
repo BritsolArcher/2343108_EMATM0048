@@ -1,3 +1,7 @@
+# Developer Information:
+Student Number: 2343108
+Email: nv22224@britsol.ac.uk
+
 # SDPA Project
 This project is the course work of `Software Development: Programming and Algorithms (SDPA)`, consisting of `Coffee Shop Simulation` and `Data Analytics`. The GitHub link of the project is https://github.com/BritsolArcher/2343108_EMATM0048.
 # Coffee Shop Simulation
